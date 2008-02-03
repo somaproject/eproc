@@ -19,7 +19,6 @@ entity regfile is
     DOB : out std_logic_vector(BITS -1 downto 0); 
     ADDRB : in std_logic_vector(3 downto 0)
     );
-
 end regfile;
 
 architecture Behavioral of regfile is
