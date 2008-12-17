@@ -3,35 +3,35 @@ VHDLS=vsim
 WORKDIR=work
 all: hw comp sim always
 
-soma/somabackplane/body.dat: soma/touched ../../../vhdl/somabackplane.vhd
+soma/somabackplane/body.dat: soma/touched ../../vhdl/somabackplane.vhd
 	mkdir -p soma
-	$(VHDLC) -work soma  ../../../vhdl/somabackplane.vhd
+	$(VHDLC) -work soma  ../../vhdl/somabackplane.vhd
 
-$(WORKDIR)/alu/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd
+$(WORKDIR)/alu/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/alu.vhd
 
-$(WORKDIR)/regfile/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd
+$(WORKDIR)/regfile/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/regfile.vhd
 
-$(WORKDIR)/ecore/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd
+$(WORKDIR)/ecore/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/ecore.vhd
 
-$(WORKDIR)/eventtx/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd
+$(WORKDIR)/eventtx/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/eventtx.vhd
 
-$(WORKDIR)/evtdnd/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd
+$(WORKDIR)/evtdnd/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/evtdnd.vhd
 
-$(WORKDIR)/txeventbuffer/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd
+$(WORKDIR)/txeventbuffer/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/txeventbuffer.vhd
 
-$(WORKDIR)/eproc/behavioral.dat: $(WORKDIR)/touched ../../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/eproc.vhd
+$(WORKDIR)/eproc/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/eproc.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/eproc.vhd
 

@@ -1,6 +1,7 @@
+
 #!/usr/bin/python
 
-import vhdltest
+from vhdltest import vhdltest
 import unittest
 import sys
 

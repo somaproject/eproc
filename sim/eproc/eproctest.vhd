@@ -97,7 +97,11 @@ architecture Behavioral of eproctest is
 
   constant DEVICE : std_logic_vector(7 downto 0) := X"27";
 
+  signal EDSELRXinit : std_logic_vector(3 downto 0)                  := (others => '0');
+  signal EDSELRXecho : std_logic_vector(3 downto 0)                  := (others => '0');
 
+  signal echoready  : std_logic := '0';
+  
   component IRAM
     generic (
       filename :     string);
@@ -331,6 +335,7 @@ begin  -- Behavioral
 
   end process total0_proc;
 
+  EDSELRX <= EDSELRXinit when echoready = '0' else EDSELRXecho; 
   -----------------------------------------------------------------------------
   -- Initial event tx receive
   -----------------------------------------------------------------------------
@@ -345,7 +350,7 @@ begin  -- Behavioral
     if earx(7) = '1' then
 
       if state = 0 then
-        EDSELRX <= "0000";
+        EDSELRXinit <= "0000";
         wait until rising_edge(CLK);
         if EDRX = X"05" then
           state := 1;
@@ -353,31 +358,31 @@ begin  -- Behavioral
 
       elsif state = 1 then
         wait until rising_edge(CLK);
-        EDSELRX <= "0000";
+        EDSELRXinit <= "0000";
         wait until rising_edge(CLK);
         if EDRX = X"06" then
           state := 2;
         end if;
 
-        EDSELRX <= "0010";
+        EDSELRXinit <= "0010";
         wait until rising_edge(CLK);
         if EDRX = X"AA" and state = 2 then
           state := 3;
         end if;
 
-        EDSELRX <= "0011";
+        EDSELRXinit <= "0011";
         wait until rising_edge(CLK);
         if EDRX = X"BB" and state = 3 then
           state := 4;
         end if;
 
-        EDSELRX <= "0100";
+        EDSELRXinit <= "0100";
         wait until rising_edge(CLK);
         if EDRX = X"CC" and state = 4 then
           state := 5;
         end if;
 
-        EDSELRX <= "0101";
+        EDSELRXinit <= "0101";
         wait until rising_edge(CLK);
         if EDRX = X"DD" and state = 5 then
           state := 6;
@@ -388,7 +393,9 @@ begin  -- Behavioral
 
       if state = 6 then
         report "Successful RX of init events" severity note;
-        report "End of Simulation" severity failure;
+        echoready <= '1'; 
+        wait; 
+        --report "End of Simulation" severity failure;
       end if;
     end if;
 
@@ -417,32 +424,35 @@ begin  -- Behavioral
 --  -----------------------------------------------------------------------------
 --   -- ECHO event
 --   -----------------------------------------------------------------------------
---   echo_event_proc : process
+  echo_event_proc : process
 
--- variable iteration : integer := 0;
--- begin
--- wait until rising_edge(CLK) and ECYCLE = '1';
--- EATX(60) <= '1';
--- eventinputs(60)(0)(15 downto 8) <= std_logic_vector(TO_UNSIGNED(128, 8));
--- eventinputs(60)(0)(7 downto 0) <= std_logic_vector(TO_UNSIGNED(60, 8));
--- eventinputs(60)(1) <= X"0123";
--- eventinputs(60)(2) <= X"4567";
--- eventinputs(60)(3) <= X"89AB";
--- eventinputs(60)(4) <= X"CDEF";
--- eventinputs(60)(5) <= std_logic_vector(TO_UNSIGNED(iteration, 16));
+    variable iteration : integer := 0;
+  begin
+    wait until rising_edge(CLK) and ECHOREADY ='1';
+    
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(60)                        <= '1';
+    eventinputs(60)(0)(15 downto 8) <= std_logic_vector(TO_UNSIGNED(128, 8));
+    eventinputs(60)(0)(7 downto 0)  <= std_logic_vector(TO_UNSIGNED(60, 8));
+    eventinputs(60)(1)              <= X"0123";
+    eventinputs(60)(2)              <= X"4567";
+    eventinputs(60)(3)              <= X"89AB";
+    eventinputs(60)(4)              <= X"CDEF";
+    eventinputs(60)(5)              <= std_logic_vector(TO_UNSIGNED(iteration, 16));
 
--- wait until rising_edge(CLK) and ECYCLE = '1';
--- EATX(60) <= '0';
--- wait until rising_edge(CLK) and EARX(60) = '1';
--- EDSELRX <= "0010";
--- wait until rising_edge(CLK);
--- assert EDRX = X"01" report "Error receiving echo Data1[15:8]" severity Error;
--- :
-
--- report "Received Event" severity note;
--- wait until rising_edge(CLK) and ECYCLE = '1';
-
--- end process echo_event_proc;
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    EATX(60) <= '0';
+    wait until rising_edge(CLK) and EARX(60) = '1';
+    EDSELRXecho  <= "0010";
+    wait until rising_edge(CLK);
+    assert EDRX = X"01" report "Error receiving echo Data1[15 : 8]" severity error;
+    report "Received Event" severity note;
+    iteration := iteration + 1; 
+    wait until rising_edge(CLK) and ECYCLE = '1';
+    if iteration = 4 then
+      report "End of Simulation" severity FAILURE;
+    end if;
+  end process echo_event_proc;
 
 
 end Behavioral;
