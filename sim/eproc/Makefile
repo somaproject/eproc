@@ -31,11 +31,19 @@ $(WORKDIR)/txeventbuffer/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackp
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/txeventbuffer.vhd
 
-$(WORKDIR)/eproc/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/eproc.vhd
+$(WORKDIR)/txreqeventbuffer/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txreqeventbuffer.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/txreqeventbuffer.vhd
+
+$(WORKDIR)/txreqbrambuffer/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txreqeventbuffer.vhd ../../vhdl/txreqeventbuffer.vhd ../../vhdl/txreqbrambuffer.vhd
+	mkdir -p $(WORKDIR)
+	$(VHDLC) ../../vhdl/txreqbrambuffer.vhd
+
+$(WORKDIR)/eproc/behavioral.dat: $(WORKDIR)/touched ../../vhdl/somabackplane.vhd ../../vhdl/alu.vhd ../../vhdl/alu.vhd ../../vhdl/regfile.vhd ../../vhdl/regfile.vhd ../../vhdl/ecore.vhd ../../vhdl/ecore.vhd ../../vhdl/eventtx.vhd ../../vhdl/eventtx.vhd ../../vhdl/evtdnd.vhd ../../vhdl/evtdnd.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txeventbuffer.vhd ../../vhdl/txreqeventbuffer.vhd ../../vhdl/txreqeventbuffer.vhd ../../vhdl/txreqbrambuffer.vhd ../../vhdl/txreqbrambuffer.vhd ../../vhdl/eproc.vhd
 	mkdir -p $(WORKDIR)
 	$(VHDLC) ../../vhdl/eproc.vhd
 
-hw: soma/somabackplane/body.dat $(WORKDIR)/alu/behavioral.dat $(WORKDIR)/regfile/behavioral.dat $(WORKDIR)/ecore/behavioral.dat $(WORKDIR)/eventtx/behavioral.dat $(WORKDIR)/evtdnd/behavioral.dat $(WORKDIR)/txeventbuffer/behavioral.dat $(WORKDIR)/eproc/behavioral.dat 
+hw: soma/somabackplane/body.dat $(WORKDIR)/alu/behavioral.dat $(WORKDIR)/regfile/behavioral.dat $(WORKDIR)/ecore/behavioral.dat $(WORKDIR)/eventtx/behavioral.dat $(WORKDIR)/evtdnd/behavioral.dat $(WORKDIR)/txeventbuffer/behavioral.dat $(WORKDIR)/txreqeventbuffer/behavioral.dat $(WORKDIR)/txreqbrambuffer/behavioral.dat $(WORKDIR)/eproc/behavioral.dat 
 
 $(WORKDIR)/IRAM/behavioral.dat: $(WORKDIR)/touched ../components/iram/iram.vhd
 	mkdir -p $(WORKDIR)

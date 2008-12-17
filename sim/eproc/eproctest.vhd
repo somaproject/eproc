@@ -19,16 +19,24 @@ end eproctest;
 architecture Behavioral of eproctest is
 
   component eproc
+    generic (
+      EATXMUX     :     boolean                                       := false;  -- do we use the synchronous mux'ed
+                                        -- EATX interface? 
+      DEMUXEOUT   :     boolean                                       := true);
     port (
       CLK         : in  std_logic;
       RESET       : in  std_logic;
       -- Event Interface, CLK rate
       EDTX        : in  std_logic_vector(7 downto 0);
-      EATX        : in  std_logic_vector(somabackplane.N -1 downto 0);
+      EATX        : in  std_logic_vector(somabackplane.N -1 downto 0) := (others => '0');
+      EATXBYTE    : in  std_logic_vector(7 downto 0) := (others => '0');
+-- interface only used when EATXMUX =
+      -- true
+      EATXBYTESEL : out std_logic_vector(3 downto 0);
       ECYCLE      : in  std_logic;
       -- Event output interface
       EAOUT       : out std_logic_vector(somabackplane.N - 1 downto 0)
- := (others => '0');
+                                                                      := (others => '0');
       EDOUT       : out std_logic_vector(95 downto 0);
       ENEWOUT     : out std_logic;
       -- High-speed interface
@@ -97,11 +105,11 @@ architecture Behavioral of eproctest is
 
   constant DEVICE : std_logic_vector(7 downto 0) := X"27";
 
-  signal EDSELRXinit : std_logic_vector(3 downto 0)                  := (others => '0');
-  signal EDSELRXecho : std_logic_vector(3 downto 0)                  := (others => '0');
+  signal EDSELRXinit : std_logic_vector(3 downto 0) := (others => '0');
+  signal EDSELRXecho : std_logic_vector(3 downto 0) := (others => '0');
 
-  signal echoready  : std_logic := '0';
-  
+  signal echoready : std_logic := '0';
+
   component IRAM
     generic (
       filename :     string);
@@ -335,7 +343,7 @@ begin  -- Behavioral
 
   end process total0_proc;
 
-  EDSELRX <= EDSELRXinit when echoready = '0' else EDSELRXecho; 
+  EDSELRX <= EDSELRXinit when echoready = '0' else EDSELRXecho;
   -----------------------------------------------------------------------------
   -- Initial event tx receive
   -----------------------------------------------------------------------------
@@ -393,8 +401,8 @@ begin  -- Behavioral
 
       if state = 6 then
         report "Successful RX of init events" severity note;
-        echoready <= '1'; 
-        wait; 
+        echoready <= '1';
+        wait;
         --report "End of Simulation" severity failure;
       end if;
     end if;
@@ -428,8 +436,8 @@ begin  -- Behavioral
 
     variable iteration : integer := 0;
   begin
-    wait until rising_edge(CLK) and ECHOREADY ='1';
-    
+    wait until rising_edge(CLK) and ECHOREADY = '1';
+
     wait until rising_edge(CLK) and ECYCLE = '1';
     EATX(60)                        <= '1';
     eventinputs(60)(0)(15 downto 8) <= std_logic_vector(TO_UNSIGNED(128, 8));
@@ -441,13 +449,13 @@ begin  -- Behavioral
     eventinputs(60)(5)              <= std_logic_vector(TO_UNSIGNED(iteration, 16));
 
     wait until rising_edge(CLK) and ECYCLE = '1';
-    EATX(60) <= '0';
+    EATX(60)    <= '0';
     wait until rising_edge(CLK) and EARX(60) = '1';
-    EDSELRXecho  <= "0010";
+    EDSELRXecho <= "0010";
     wait until rising_edge(CLK);
     assert EDRX = X"01" report "Error receiving echo Data1[15 : 8]" severity error;
     report "Received Event" severity note;
-    iteration := iteration + 1; 
+    iteration := iteration + 1;
     wait until rising_edge(CLK) and ECYCLE = '1';
     if iteration = 4 then
       report "End of Simulation" severity FAILURE;
