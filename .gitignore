@@ -1,0 +1,5 @@
+*.pyc
+transcript
+*.wlf
+test.do
+sim/eproc/soma
