@@ -6,9 +6,9 @@ use IEEE.STD_LOGIC_UNSIGNED.all;
 library UNISIM;
 use UNISIM.VComponents.all;
 
-library SOMA;
-use SOMA.somabackplane.all;
-use soma.somabackplane;
+--library SOMA;
+--use SOMA.somabackplane.all;
+--use soma.somabackplane;
 
 
 entity txreqbrambuffer is
@@ -24,38 +24,44 @@ entity txreqbrambuffer is
     SENDREQ   : out std_logic;
     SENDGRANT : in  std_logic;
     SENDDONE  : out std_logic;
+    DOUTEN    : in  std_logic := '1';
     DOUT      : out std_logic_vector(7 downto 0));
 end txreqbrambuffer;
 
 architecture Behavioral of txreqbrambuffer is
 
   -- input signals
-  signal addrinl : std_logic_vector(2 downto 0)  := (others => '0');
-  signal dinl    : std_logic_vector(15 downto 0) := (others => '0');
-  signal weinl , weinll  : std_logic                     := '0';
+  signal addrinl        : std_logic_vector(2 downto 0)  := (others => '0');
+  signal dinl           : std_logic_vector(15 downto 0) := (others => '0');
+  signal weinl , weinll : std_logic                     := '0';
 
   signal decode : std_logic_vector(15 downto 0) := (others => '0');
 
-  signal dib , dob   : std_logic_vector(15 downto 0) := (others => '0');
-  signal addrb  : std_logic_vector(9 downto 0)  := (others => '0');
-  signal addrbl : std_logic_vector(9 downto 4)  := (others => '0');
-  signal web    : std_logic                     := '0';
+  signal dib , dob : std_logic_vector(15 downto 0) := (others => '0');
+  signal addrb     : std_logic_vector(9 downto 0)  := (others => '0');
+  signal addrbl    : std_logic_vector(9 downto 4)  := (others => '0');
+  signal web       : std_logic                     := '0';
 
 
   -- oputput side
   signal doa   : std_logic_vector(7 downto 0)  := (others => '0');
+  signal doal   : std_logic_vector(7 downto 0)  := (others => '0');
   signal addra : std_logic_vector(10 downto 0) := (others => '0');
+  signal addral : std_logic_vector(10 downto 0) := (others => '0');
 
   signal addrbll  : std_logic_vector(9 downto 4) := (others => '0');
   signal incaddra : std_logic                    := '0';
 
   signal ena : std_logic := '0';
   signal wea : std_logic := '0';
-
-  type states is (none, getbcasth, getbcastl, armdata, reqs, datas, dones);
+  signal weal : std_logic := '0';
+  
+  type   states is (none, getbcasth, getbcastl, armdata, reqs, datas, dones);
   signal cs, ns : states := none;
 
   signal bcast : std_logic := '0';
+
+  
 
 begin  -- Behavioral
 
@@ -65,41 +71,41 @@ begin  -- Behavioral
   buffer_inst : RAMB16_S9_S18
     generic map (
       SIM_COLLISION_CHECK => "NONE",
-      WRITE_MODE_A          => "READ_FIRST")
+      WRITE_MODE_A        => "READ_FIRST")
     port map (
-      DOA                 => doa,
-      DOB                 => dob, 
-      ADDRA               => addra,
-      ADDRB               => addrb,
-      CLKA                => OUTCLK,
-      CLKB                => clk,
-      DIA                 => X"00",
-      DIB                 => dib,
-      ENA                 => ena,
-      ENB                 => '1',
-      SSRA                => '0',
-      SSRB                => '0',
-      DIPA                => "0",
-      DIPB                => "00",
-      WEA                 => wea,
-      WEB                 => web);
+      DOA   => doa,
+      DOB   => dob,
+      ADDRA => addra,
+      ADDRB => addrb,
+      CLKA  => OUTCLK,
+      CLKB  => clk,
+      DIA   => X"00",
+      DIB   => dib,
+      ENA   => ena,
+      ENB   => '1',
+      SSRA  => '0',
+      SSRB  => '0',
+      DIPA  => "0",
+      DIPB  => "00",
+      WEA   => weal,
+      WEB   => web);
 
   web <= weinll when addrinl = "111" else
-         weinl; 
+         weinl;
 
 
-  addrb(3 downto 0) <= X"6"                         when addrinl = "000" else
-                       X"7"                         when addrinl = "001" else
-                       X"8"                         when addrinl = "010" else
-                       X"9"                         when addrinl = "011" else
-                       X"A"                         when addrinl = "100" else
-                       X"B"                         when addrinl = "101" else
-                       X"0"                         when addrinl = "110" else
-                       ('0' & dinl(6 downto 4)) + 1; 
+  addrb(3 downto 0) <= X"6" when addrinl = "000" else
+                       X"7" when addrinl = "001" else
+                       X"8" when addrinl = "010" else
+                       X"9" when addrinl = "011" else
+                       X"A" when addrinl = "100" else
+                       X"B" when addrinl = "101" else
+                       X"0" when addrinl = "110" else
+                       ('0' & dinl(6 downto 4)) + 1;
 
   dib <= SRC & dinl(7 downto 0) when addrinl = "000" else
-         decode  or dob         when addrinl = "111" else
-         X"0001"                when addrinl = "110" else
+         decode when addrinl = "111" else  -- FIXME DOES NOT ACTUALLY "OR"
+         X"0001"       when addrinl = "110" else
          dinl(7 downto 0) & dinl(15 downto 8);
 
   decode <= X"0001" when dinl(3 downto 0) = X"0" else
@@ -126,8 +132,8 @@ begin  -- Behavioral
       addrinl <= ADDRIN;
       dinl    <= DIN;
       weinl   <= WEIN;
-      weinll    <= weinl;
-      
+      weinll  <= weinl;
+
       if addrinl = "000" and weinl = '1' then
         addrb(9 downto 4) <= addrb(9 downto 4) + 1;
       end if;
@@ -150,22 +156,34 @@ begin  -- Behavioral
       end if;
 
       if cs = none then
-        addra(4 downto 0)   <= (others => '0');
+        addra(4 downto 0) <= (others => '0');
       else
-        if incaddra = '1' then
-          addra(4 downto 0) <= addra(4 downto 0) + 1;
-        end if;
+        if cs = datas then
+          if incaddra = '1' and DOUTEN = '1' then
+            addra(4 downto 0) <= addra(4 downto 0) + 1;
+          end if;
+        else
+          if incaddra = '1' or SENDGRANT = '1' then
+            addra(4 downto 0) <= addra(4 downto 0) + 1;
+          end if;
+        end if; 
       end if;
 
       if cs = getbcastl then
         bcast <= doa(0);
       end if;
-
+      if douten = '1' then
+        doal <= doa; 
+      end if;
+      
     end if;
   end process outputmain;
 
+  weal <= (wea and DOUTEN) when cs= datas else wea;
+              
+
   DOUT <= X"FF" when bcast = '1' and addra(4 downto 0) < "01101" else
-          doa;
+          doal;
 
   fsm : process(cs, addra, addrb, SENDGRANT)
   begin
@@ -194,7 +212,7 @@ begin  -- Behavioral
         ns       <= armdata;
 
       when armdata =>
-        incaddra <= '1';
+        incaddra <= '0';
         ena      <= '1';
         wea      <= '1';
         ns       <= reqs;
@@ -204,9 +222,9 @@ begin  -- Behavioral
         ena      <= '0';
         wea      <= '0';
         if SENDGRANT = '1' then
-          ns     <= datas;
+          ns <= datas;
         else
-          ns     <= reqs;
+          ns <= reqs;
         end if;
 
       when datas =>
@@ -214,9 +232,9 @@ begin  -- Behavioral
         ena      <= '1';
         wea      <= '1';
         if addra(4 downto 0) = "11000" then
-          ns     <= dones;
+          ns <= dones;
         else
-          ns     <= datas;
+          ns <= datas;
         end if;
 
       when dones =>
